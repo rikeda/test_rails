@@ -1,0 +1,97 @@
+# coding: utf-8
+
+<!-- Probably move the stylesheet to you layout. Also make sure you include the javascript. -->
+<%= stylesheet_link_tag "event_calendar" %>
+
+<% @shown_month %>	<%# output:2012-06 %>
+<% @shown_month.month %>	<%# output:6 %>
+<%#<% @shown_month.year %>	<%# output:2012 %>
+<%#<% @shown_month.day %>	<%# output:1 %>
+<%#<% @event_strips %>
+
+<%# output:
+[[nil, nil, nil, nil, nil, #<Event id: 1, user_id: 1, start_at: "2012-06-01 11:07:00", end_at: "2012-06-01 11:07:00", state: true, created_at: "2012-06-05 11:09:04", updated_at: "2012-06-05 11:32:21">, #<Event id: 2, user_id: 2, start_at: "2012-06-02 11:17:00", end_at: "2012-06-02 11:17:00", state: false, created_at: "2012-06-05 11:17:48", updated_at: "2012-06-05 11:17:48">, #<Event id: 3, user_id: 3, start_at: "2012-06-03 11:17:00", end_at: "2012-06-03 11:17:00", state: false, created_at: "2012-06-05 11:18:01", updated_at: "2012-06-05 11:18:01">, #<Event id: 4, user_id: 4, start_at: "2012-06-04 11:17:00", end_at: "2012-06-04 11:17:00", state: true, created_at: "2012-06-05 11:18:08", updated_at: "2012-06-05 12:28:51">, #<Event id: 5, user_id: 5, start_at: "2012-06-05 11:17:00", end_at: "2012-06-05 11:17:00", state: true, created_at: "2012-06-05 11:18:15", updated_at: "2012-06-06 01:18:25">, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil]]
+%>
+
+<%#<% @month %> <%# output:6 %>
+<%#<% @year %> <%# output:2012%>
+<%#<% @show_today %> <%# output:%>
+
+
+<h1>Calendar</h1>
+
+<% @user = User.new %>
+<% t = Time.now %>
+<% @time = Time.local(t.year, t.month, t.day, 9, 0, 1) %>
+<%# @time = Time.local(t.year, 6, 11, 9, 0, 1) %>
+<%= raw(event_calendar(@time)) %><br />
+
+<%#= event_calendar_opts %>
+
+<%#<%= @shown_month.prev_month.month %> <!-- 前月 -->
+
+<!-- eventsテーブル 登録usersリスト -->
+<!-- <b>[ eventsテーブル 登録usersリスト ]</b><br /> -->
+<!-- <%# events = Event.all %> -->
+	<!-- <%# events.each do |event| %> -->
+	<%#<%= event.id %> <!-- : <%#= event.user.name %><br /> -->
+	<!-- <%#= event.start_at.year %> / <%#= event.start_at.month %> / <%#= event.start_at.day %> : <%#= event.user.name%> , <%#= event.state %><br />
+<%# end %>
+<br /> -->
+
+
+
+<!-- eventsテーブル 登録users(state=NG)リスト -->
+<b>[ eventsテーブル 登録users(state=NG)リスト ]</b><br />
+<%# t = Time.now %>
+<table>
+<%# events = Event.all %>
+<% events = Event.order("start_at DESC") %>
+<% events.each do |event| %>
+	<% if event.state == false %>
+		<%# if (event.start_at.month <= Time.now.month) and (event.start_at.year <= Time.now.year)%> <!-- こちらでは、日付の指定がややこしくなう上、難しく複雑になるので、使わない -->
+		<%# if event.start_at <= Time.now %> <!-- こちらなら、簡単に指定できるので、こちらを使う -->
+		<%# if (event.start_at.year == t.prev_month.year) and (event.start_at.month == t.prev_month.month) %>
+		<%# if (event.start_at.year <= t.year) and (event.start_at.month <= t.month) and (event.start_at.day < t.day)%>
+		<% if (event.start_at < @time) %>
+			<tr>
+				<!-- <td><%#= event.start_at.year %></td>		<td> /</td> -->
+				<!-- <td><%#= event.start_at.month %></td>	<td>/</td> -->
+				<!-- <td><%#= event.start_at.day %></td>		<td>:</td> -->
+				<td><%= event.start_at.to_date %></td>	<td>:</td>
+				<td><%= event.user.name %></td>				<td>,</td>
+				<!-- <td><%#= event.state %></td> -->
+				<td>
+					<% if event.state == true %> OK
+					<% elsif event.state == false %> NG
+					<% else %> error
+					<% end %>
+				</td>
+			</tr>
+		<% end %>
+		<% if (@time.day == event.start_at.day) %>
+			<tr><td>--------------</td><td>--</td><td>----------</td><td>--</td><td>-----</td></tr>
+		<% end %>
+	<% end %>
+<% end %>
+</table>
+<br /><br />
+
+<!-- <%= t = Time.now %> (now)<br /> -->	<!-- 現在 -->
+<%# t = Time.local(t.year, t.month, t.day)%>
+<!-- <%= t.yesterday %> (yesterday)<br /> -->	<!-- 昨日 -->
+<!-- <%= t.tomorrow %> (tomorrow)<br /> -->		<!-- 明日 -->
+<!-- <%= t.prev_month.year %> (prev month)<br /> -->	<!-- 昨月 -->
+<!-- <%= t.next_month %> (next month)<br /> -->	<!-- 来月 -->
+<!-- <%= t.prev_year %> (prev year)<br /> -->	<!-- 昨年 -->
+<!-- <%= t.next_year %> (next year)<br /> -->	<!-- 来年 -->
+
+<!--<b>[ 前月の未実施者 ]</b>-->
+<%# events = Event.all %>
+	<%#<% events.each do |event| %>
+		<%#<% t = Time.now %>	<!-- now -->
+		<%#<% if (event.start_at.year  == t.prev_month.year ) and (event.start_at.month == t.prev_month.month) %>		<!--t.prev_month.year:前月の西暦、 t.prev_month.month:前月の月 -->
+			<!--<%#<%= event.start_at.year %> / <%#<%= event.start_at.month %> / <%#<%= event.start_at.day %>--><!--<br />-->
+		<%#<% end %>
+	<%#<% end %>
+<%# end %>

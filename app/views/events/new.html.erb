@@ -1,0 +1,49 @@
+# coding:utf-8
+
+<%# I18n.locale = :ja %>
+
+<%- model_class = @event.class -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => t('helpers.titles.new', :model => model_class.model_name.human,
+                                 :default => "New #{model_class.model_name.human}") %></h1>
+</div>
+<%= render :partial => 'form' %>
+
+<!-- eventsテーブル 登録users(state=false)リスト -->
+<b>[ eventsテーブル 登録users(state=false)リスト ]</b><br />
+<% t = Time.now %>
+<%# t = Time.local(2012, 7, 1)%>
+<table>
+	<%# events = Event.all %>
+	<% events = Event.order("start_at DESC") %>
+	<% events.each do |event| %>
+		<% if event.state == false %>
+			<%# if (event.start_at.month <= Time.now.month) and (event.start_at.year <= Time.now.year)%> <!-- こちらでは、日付の指定がややこしくなう上、難しく複雑になるので、使わない -->
+			<%# if event.start_at <= Time.now %> <!-- こちらなら、簡単に指定できるので、こちらを使う -->
+			<%# if (event.start_at.year == t.prev_month.year) and (event.start_at.month == t.prev_month.month) %>
+			<%# if (event.start_at.year <= t.year) and (event.start_at.month <= t.month) and (event.start_at.day < t.day)%>
+			<% if (event.start_at < t) %>
+				<tr>
+					<!-- <td><%#= event.start_at.year %></td>		<td>/</td> -->
+					<!-- <td><%#= event.start_at.month %></td>	<td>/</td> -->
+					<!-- <td><%#= event.start_at.day %></td>		<td>:</td> -->
+					
+					<td><%= event.start_at.to_date %></td>	<td>:</td>
+					<td><%= event.user.name %></td>				<td>,</td>
+					
+					<!-- <td><%#= event.state %></td> -->
+					<td>
+						<% if event.state == true %>OK
+						<% elsif event.state == false %>NG
+						<% else %>error
+						<% end %>
+					</td>
+				</tr>
+			<% end %>
+			<% if (t.day == event.start_at.day) %>
+				<tr><td>--------------</td><td>--</td><td>------------</td><td>--</td><td>-----</td></tr>
+			<% end %>
+		<% end %>
+	<% end %>
+</table>
+<br /><br />

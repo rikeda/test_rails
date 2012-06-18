@@ -1,0 +1,82 @@
+# coding:utf-8
+
+<% I18n.locale = :ja %>
+
+<%- model_class = @user.class -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:name) %>:</strong></dt>
+  	<dd><%= @user.name %></dd>
+	<dt><strong><%= model_class.human_attribute_name(:created_at) %>:</strong><dt>
+		<dd><%= @user.created_at.to_date %></dd>
+	<dt><strong><%= model_class.human_attribute_name(:updated_at) %>:</strong><dt>
+		<dd><%= @user.updated_at.to_date %></dd>	<!-- <dd><%#= @user.updated_at.year %> / <%#= @user.updated_at.month %> / <%#= @user.updated_at.day %></dd> -->
+</dl>
+
+<div class="form-actions">
+  <%= link_to t('.back', :default => t("helpers.links.back")),
+              users_path, :class => 'btn'  %>
+  <%= link_to t('.edit', :default => t("helpers.links.edit")),
+              edit_user_path(@user), :class => 'btn' %>
+  <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+              user_path(@user),
+              :method => 'delete',
+              :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')),
+              :class => 'btn btn-danger' %>
+</div>
+
+<!-- <%#= @user.id %><br />
+<%#= Event.find(1).user.name %><br />
+<%#= userid = @user.id %><br /><br /> -->
+
+<h4>[掃除履歴]</h4>
+<table>
+	<!-- <tr><td></td><td></td><td>[掃除履歴]</td></tr> -->
+		<tr>
+		<td>|</td><td align=center>日付</td> <td align=center>|</td> <td align=center>作業者</td> <td align=center>|</td> <td align=center>チェック</td><td>|</td>
+	</tr>
+	<% t = Time.now.to_date %>
+	<% events = Event.order("start_at DESC") %>
+	<% events.each do |event| %>
+		<% if (event.user_id == @user.id) and (event.start_at.to_date < t) %>
+			<tr>
+				<td></td>
+				<td><%= event.start_at.to_date %></td> <td> </td>
+				<td align=center><%= event.user.name %></td> <td> </td>
+				<td align=center>
+				<% if event.state == true %>	<font size=4>◯</font>
+				<% elsif event.state == false %>	<font size=4>×</font>
+				<% else %>	error
+				<% end %>
+				</td>
+				<td></td>
+			</tr>
+		<% end %>
+	<% end %>
+</table>
+<br />
+
+<%# events = Event.where(:id => @user.id) %>
+<%# events = Event.find(1) %>
+<%#  %>
+<%# events.each do |event| %>
+	<%#= event.id %><!-- <br /> -->
+<%# end %>
+
+<!-- <%# events = Event.find(@user.id).events %>
+<%# events.each do |event| %>
+	<%#= event.user.name %>, <%#= event.start_at.to_date %>, <%#= event.state %><br />
+<%# end %> -->
+
+<%# events1 = @events.all %>
+<%# events.each do |event| %>
+	<%#= event.id %>
+<%# end %>
+
+<!-- <%# @events = Event.find(@user.id) %>
+<%# events1 = Event.order("start_at ASC") %>-->
+<!-- <%# events.each do |event| %> -->
+<%# end %>

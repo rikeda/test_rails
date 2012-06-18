@@ -1,0 +1,27 @@
+ja:
+  activerecord:
+    # model i18n
+    models:
+      user: 作業者
+      event: 予定
+
+    attributes:
+      # model:user, column I18n
+      user:
+        id: 作業者ID
+        name: 作業者名
+        created_at: 作成日時
+        updated_at: 更新日時
+      # model:event, column I18n
+      event:
+        id: 予定ID
+        user_id: 作業者ID
+        start_at: 作業開始日
+        end_at: 作業終了日
+        state: チェック
+        created_at: 作成日時
+        updated_at: 更新日時
+        
+        
+
+        

@@ -1,0 +1,10 @@
+kakutani:
+  id: 1
+  name: 角谷HTML化計画
+  created_at: 2012-06-14
+  updated_at: 2012-06-14
+moro:
+  id: 2
+  name: moroの日記
+  created_at: 2012-06-14
+  updated_at: 2012-06-14

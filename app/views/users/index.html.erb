@@ -1,0 +1,86 @@
+# coding:utf-8
+
+<% I18n.locale = :ja %>
+
+<%- model_class = User.new.class -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.pluralize %></h1>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <!-- <th><%#= model_class.human_attribute_name(:id) %></th> -->
+      <th><%= model_class.human_attribute_name(:name) %></th>
+			<th><%= model_class.human_attribute_name(:created_at) %></th>
+      <th><%= model_class.human_attribute_name(:updated_at) %></th>
+			<th>Penalty_count</th>
+      <th><%=t '.actions', :default => t("helpers.actions") %></th>
+    </tr>
+  </thead>
+  <tbody>
+		<% t = Time.now %>
+		<% @users = User.order("updated_at ASC")%>
+    <% @users.each do |user| %>
+
+     	<tr>
+        <!-- <td><%# link_to user.id, user_path(user) %></td> -->
+        <td><%= link_to user.name, user_path(user) %></td>
+
+				<td><%= user.created_at.to_date %></td>
+				
+        <!-- <td><%#=l user.created_at %></td> -->
+				<!-- <td><%#= user.updated_at.year %> / <%#= user.updated_at.month %> / <%#= user.updated_at.day %></td> -->
+				<td><%= user.updated_at.to_date %></td>
+				
+				<!-- 掃除を行わなかった回数をペナルティ・カウントとして数える -->
+				<% penalty_count = 0%>
+				<!-- eventsテーブルからレコードを全て取り出し、eventsに格納する -->
+				<% events = Event.all %>
+				<!-- eventsに格納したレコードを1つずつ取り出し、eventという名前で扱う -->
+				<% events.each do |event| %>
+					<!-- 掃除日程が現在日より以前の場合 -->
+					<% if event.start_at.to_date < t.to_date %>		
+						<!-- 掃除作業者が作業者と同じ場合 -->
+						<% if event.user_id == user.id %>
+							<!-- 掃除が行われなかった場合 -->
+							<% if event.state == false%>
+								<!-- ペナルティ・カウントを1増やす -->
+								<% penalty_count = penalty_count + 1 %>
+							<% end %>
+						<% end %>
+					<% end %>
+	 			<% end %>
+				<!-- ペナルティ・カウントを表示する -->
+				<td><%= penalty_count %></td>
+				
+        <td>
+          <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                      edit_user_path(user), :class => 'btn btn-mini' %>
+          <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                      user_path(user),
+                      :method => :delete,
+                      :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')),
+                      :class => 'btn btn-mini btn-danger' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to t('.new', :default => t("helpers.links.new")),
+            new_user_path,
+            :class => 'btn btn-primary' %>
+
+<br />
+<% user_without_name = User.new %>
+<%= user_without_name.valid? %><br />
+
+<%= user_without_name.errors %><br />
+
+<% user_without_name.errors.each do |attribute, error| %>
+<%= "#{attribute} have errors '#{error.to_s}'."%><br />
+<% end %>
+
+<%= user_without_name.errors.full_messages %><br />
+
+<%= user_without_name.errors.count %><br />

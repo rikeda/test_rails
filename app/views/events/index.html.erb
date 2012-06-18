@@ -1,0 +1,115 @@
+# coding: utf-8
+
+<% I18n.locale = :ja %>
+<%- model_class = Event.new.class -%>
+
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.pluralize %></h1>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <!-- <th><%#= model_class.human_attribute_name(:id) %></th> -->
+      <th><%= model_class.human_attribute_name(:user_id) %></th>
+      <th><%= model_class.human_attribute_name(:start_at) %></th>
+      <th><%= model_class.human_attribute_name(:end_at) %></th>
+      <th><%= model_class.human_attribute_name(:state) %></th>
+      <!-- <th><%#= model_class.human_attribute_name(:created_at) %></th> -->
+			<th><%= model_class.human_attribute_name(:updated_at) %></th>
+      <th><%=t '.actions', :default => t("helpers.actions") %></th>
+    </tr>
+  </thead>
+  <tbody>
+		<% @events = Event.order("start_at DESC")%>
+    <% @events.each do |event| %>
+		<% t = Time.local(Time.now.year, Time.now.month, Time.now.day, 9, 0, 1) %>
+      <tr>
+        <!-- <td><%#= link_to event.id, event_path(event) %></td> -->
+        <td><%= link_to event.user.name, event_path(event) %><%#= event.user_id %></td>
+
+        <td><%= event.start_at.to_date %>	<!-- <td><%= event.start_at.year %> / <%= event.start_at.month %> / <%= event.start_at.day %></td> -->	<!-- <td><%#= event.start_at. %></td> -->
+				<td><%= event.end_at.to_date %></td>	<!-- <td><%= event.end_at.year %> / <%= event.end_at.month %> / <%= event.end_at.day %></td> -->	<!-- <td><%= event.end_at %></td> -->
+        <!-- <td><%= event.state %></td> -->
+				<td>
+				<% if event.start_at < t %>
+					<% if event.state == true %>OK<!-- <font size=2>◯</font> -->
+					<% elsif event.state == false %>NG<!-- <font size=3>×</font> -->
+					<% else %>error
+					<% end %>
+				<% else %><font size=3>-</font>
+				<% end %>
+				
+				</td>
+        <!-- <td><%#=l event.created_at %></td> -->
+				<!-- <td><%#= event.created_at %></td> -->
+				<td><%= event.updated_at.to_s(:db) %></td>	<!-- <td><%#= event.updated_at.year %> / <%#= event.updated_at.month %> / <%#= event.updated_at.day %></td> -->
+				
+        <td>
+          <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                      edit_event_path(event), :class => 'btn btn-mini' %>
+          <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                      event_path(event),
+                      :method => :delete,
+                      :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')),
+                      :class => 'btn btn-mini btn-danger' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to t('.new', :default => t("helpers.links.new")),
+            new_event_path,
+            :class => 'btn btn-primary' %>
+
+<br /><br />
+
+
+<!-- eventsテーブル 登録users(state=false)リスト -->
+<b>[ eventsテーブル 登録users(state=false)リスト ]</b><br />
+<% t = Time.now %>
+<%# t = Time.local(2012, 7, 2)%>
+<table>
+	<%# events = Event.all %>
+	<% events = Event.order("start_at DESC") %>
+	<% events.each do |event| %>
+		<% if event.state == false %>
+			<%# if (event.start_at.month <= Time.now.month) and (event.start_at.year <= Time.now.year)%> <!-- こちらでは、日付の指定がややこしくなう上、難しく複雑になるので、使わない -->
+			<%# if event.start_at <= Time.now %> <!-- こちらなら、簡単に指定できるので、こちらを使う -->
+			<%# if (event.start_at.year == t.prev_month.year) and (event.start_at.month == t.prev_month.month) %>
+			<%# if (event.start_at.year <= t.year) and (event.start_at.month <= t.month) and (event.start_at.day < t.day)%>
+			<% if (event.start_at < t) %>
+				<tr>
+					<!-- <td><%= event.start_at.year %></td>		<td>/</td> -->
+					<!-- <td><%= event.start_at.month %></td>	<td>/</td> -->
+					<!-- <td><%= event.start_at.day %></td>		<td>:</td> -->
+					
+					<td><%= event.start_at.to_date %></td>	<td>:</td>
+					<td><%= event.user.name %></td>				<td>,</td>
+					<td>
+						<% if event.state == true %> OK
+						<% elsif event.state == false %> NG
+						<% else %> error
+						<% end %>
+					</td>
+				</tr>
+			<% end %>
+			<% if (t.day == event.start_at.day) %>
+				<tr><td>--------------</td><td>--</td><td>----------</td><td>--</td><td>-----</td></tr>
+			<% end %>
+		<% end %>
+	<% end %>
+</table>
+<br /><br />
+
+<%= Time.now %><br />
+<%= Time.now.to_s(:db) %><br />
+<%= Time.now.to_s(:time) %><br />
+
+<% I18n.locale = :ja %>
+<%= User.model_name.human %><br />
+<%= Event.model_name.human %><br />
+
+<%= User.human_attribute_name("name") %><br />
+<%= User.human_attribute_name("created_at") %><br />
+<%= Event.human_attribute_name("user_id") %><br />
